@@ -1,39 +1,43 @@
 package com.marouaneLK.tp1.controllers;
 
 import com.marouaneLK.tp1.dtos.BankAccountDto;
-import com.marouaneLK.tp1.entities.BankAccount;
-import com.marouaneLK.tp1.mappers.BankAccountMapper;
-import com.marouaneLK.tp1.repositories.BankAccountRepository;
+import com.marouaneLK.tp1.services.BankAccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
-import java.util.Date;
 import java.util.List;
 
 @Controller
 @AllArgsConstructor
 public class BankAccountGraphQLController {
-    private final BankAccountRepository accountRepository;
-    private final BankAccountMapper bankAccountMapper;
+    private final BankAccountService bankAccountService;
 
     @QueryMapping
-    public List<BankAccount> accounts() {
-        return accountRepository.findAll();
+    public List<BankAccountDto> accounts() {
+        return bankAccountService.getAccounts();
     }
 
     @QueryMapping
-    public BankAccount accountById(@Argument long id) {
-        return accountRepository.findById(id).orElse(null);
+    public BankAccountDto accountById(@Argument long id) {
+        return bankAccountService.getAccount(id);
     }
 
     @MutationMapping
     public BankAccountDto createAccount(@Argument BankAccountDto account) {
-        BankAccount bankAccount = bankAccountMapper.toBankAccount(account);
-        bankAccount.setId(null);
-        bankAccount.setCreatedAt(new Date());
-        return bankAccountMapper.toBankAccountDto(accountRepository.save(bankAccount));
+        return bankAccountService.saveAccount(account);
     }
+
+    @MutationMapping
+    public BankAccountDto updateAccount(@Argument BankAccountDto account, @Argument long id) {
+        return bankAccountService.updateAccount(account, id);
+    }
+
+    @MutationMapping
+    public String deleteAccount(@Argument long id) {
+        return bankAccountService.deleteAccount(id);
+    }
+
 }

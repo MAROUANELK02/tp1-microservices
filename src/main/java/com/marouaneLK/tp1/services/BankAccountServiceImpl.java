@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -19,6 +20,7 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public BankAccountDto saveAccount(BankAccountDto account) {
+        account.setCreatedAt(new Date());
         return bankAccountMapper.toBankAccountDto(accountRepository
                 .save(bankAccountMapper.toBankAccount(account)));
     }
@@ -26,7 +28,7 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     public BankAccountDto getAccount(Long id) {
         return bankAccountMapper.toBankAccountDto(accountRepository
-                .findById(id).orElse(null));
+                .findById(id).orElseThrow(() -> new RuntimeException("Account not found")));
     }
 
     @Override
@@ -52,8 +54,9 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
-    public void deleteAccount(Long id) {
+    public String deleteAccount(Long id) {
+        accountRepository.findById(id).orElseThrow(()-> new RuntimeException("Account not found"));
         accountRepository.deleteById(id);
-        System.out.println("Bank account deleted");
+        return "Bank account deleted";
     }
 }

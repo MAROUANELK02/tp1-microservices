@@ -9,5 +9,5 @@ public interface BankAccountService {
     BankAccountDto getAccount(Long id);
     List<BankAccountDto> getAccounts();
     BankAccountDto updateAccount(BankAccountDto account, long id);
-    void deleteAccount(Long id);
+    String deleteAccount(Long id);
 }
